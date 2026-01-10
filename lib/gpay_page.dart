@@ -46,6 +46,13 @@ class GpayPage extends StatelessWidget {
                 _ActionButton(label: 'Pay'),
               ],
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/scanner');
+              },
+              child: const Text('Scan any QR code'),
+            ),
             const SizedBox(height: 24),
             const Text(
               'Recent',
