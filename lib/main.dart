@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
+import 'signup_screen.dart';
+import 'gpay_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +33,13 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
+        '/home': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        '/gpay': (context) => const GpayPage(),
+      },
     );
   }
 }
