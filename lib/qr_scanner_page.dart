@@ -84,117 +84,222 @@ class _QRScannerPageState extends State<QRScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEAF6FF),
-      appBar: AppBar(
-        title: const Text('Scan QR'),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.photo_library),
-            onPressed: _pickImageFromGallery,
-            tooltip: 'Choose from Gallery',
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Full-screen scanner
+          MobileScanner(controller: _cameraController, onDetect: _onDetect),
+          // Dark overlay with transparent cutout
+          CustomPaint(painter: _ScannerOverlayPainter(), child: Container()),
+          // Close button at top-left
+          SafeArea(
+            child: Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+          // Title text at top center
+          SafeArea(
+            child: Positioned(
+              top: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Scan QR Code',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Instruction text below center
+          Positioned(
+            bottom: 180,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'Align QR code within frame',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Floating control buttons at bottom
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildFloatingButton(
+                  icon: Icons.flash_on,
+                  onPressed: () => _cameraController.toggleTorch(),
+                ),
+                const SizedBox(width: 30),
+                _buildFloatingButton(
+                  icon: Icons.photo_library,
+                  onPressed: _pickImageFromGallery,
+                ),
+                const SizedBox(width: 30),
+                _buildFloatingButton(
+                  icon: Icons.flip_camera_android,
+                  onPressed: () => _cameraController.switchCamera(),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Smaller camera view
-            Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: MobileScanner(
-                controller: _cameraController,
-                onDetect: _onDetect,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Align QR code within frame',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Controls
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildControlButton(
-                    icon: Icons.flash_on,
-                    label: 'Flash',
-                    onPressed: () => _cameraController.toggleTorch(),
-                  ),
-                  _buildControlButton(
-                    icon: Icons.photo_library,
-                    label: 'Gallery',
-                    onPressed: _pickImageFromGallery,
-                  ),
-                  _buildControlButton(
-                    icon: Icons.flip_camera_android,
-                    label: 'Flip',
-                    onPressed: () => _cameraController.switchCamera(),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildControlButton({
+  Widget _buildFloatingButton({
     required IconData icon,
-    required String label,
     required VoidCallback onPressed,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 8,
-                spreadRadius: 1,
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 12,
+            spreadRadius: 2,
           ),
-          child: IconButton(
-            icon: Icon(icon),
-            iconSize: 28,
-            onPressed: onPressed,
-            color: Colors.blueAccent,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ],
+        ],
+      ),
+      child: IconButton(
+        icon: Icon(icon),
+        iconSize: 28,
+        onPressed: onPressed,
+        color: Colors.blueAccent,
+        padding: const EdgeInsets.all(16),
+      ),
     );
   }
+}
+
+// Custom painter for the scanner overlay
+class _ScannerOverlayPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double scanAreaSize = size.width * 0.7;
+    final double left = (size.width - scanAreaSize) / 2;
+    final double top = (size.height - scanAreaSize) / 2;
+    final Rect scanArea = Rect.fromLTWH(left, top, scanAreaSize, scanAreaSize);
+
+    // Draw semi-transparent overlay
+    final Paint overlayPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.6);
+
+    canvas.drawPath(
+      Path.combine(
+        PathOperation.difference,
+        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
+        Path()..addRRect(
+          RRect.fromRectAndRadius(scanArea, const Radius.circular(20)),
+        ),
+      ),
+      overlayPaint,
+    );
+
+    // Draw corner brackets
+    final Paint cornerPaint = Paint()
+      ..color = Colors.blueAccent
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+
+    const double cornerLength = 30;
+
+    // Top-left corner
+    canvas.drawLine(
+      Offset(left, top + cornerLength),
+      Offset(left, top),
+      cornerPaint,
+    );
+    canvas.drawLine(
+      Offset(left, top),
+      Offset(left + cornerLength, top),
+      cornerPaint,
+    );
+
+    // Top-right corner
+    canvas.drawLine(
+      Offset(left + scanAreaSize - cornerLength, top),
+      Offset(left + scanAreaSize, top),
+      cornerPaint,
+    );
+    canvas.drawLine(
+      Offset(left + scanAreaSize, top),
+      Offset(left + scanAreaSize, top + cornerLength),
+      cornerPaint,
+    );
+
+    // Bottom-left corner
+    canvas.drawLine(
+      Offset(left, top + scanAreaSize - cornerLength),
+      Offset(left, top + scanAreaSize),
+      cornerPaint,
+    );
+    canvas.drawLine(
+      Offset(left, top + scanAreaSize),
+      Offset(left + cornerLength, top + scanAreaSize),
+      cornerPaint,
+    );
+
+    // Bottom-right corner
+    canvas.drawLine(
+      Offset(left + scanAreaSize - cornerLength, top + scanAreaSize),
+      Offset(left + scanAreaSize, top + scanAreaSize),
+      cornerPaint,
+    );
+    canvas.drawLine(
+      Offset(left + scanAreaSize, top + scanAreaSize - cornerLength),
+      Offset(left + scanAreaSize, top + scanAreaSize),
+      cornerPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -14,6 +14,7 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
   String _selectedName = "MERCHANT";
   String _selectedAvatar = "M";
   final double _balance = 525.17; // Hardcoded balance for demo
+  final TextEditingController _noteController = TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +31,12 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
           ? widget.upiId[0].toUpperCase()
           : "U";
     }
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
   }
 
   String _formatName(String name) {
@@ -70,6 +77,12 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
       if (!_amount.contains('.')) {
         _amount += '.';
       }
+    });
+  }
+
+  void _setPresetAmount(int amount) {
+    setState(() {
+      _amount = amount.toString();
     });
   }
 
@@ -180,18 +193,38 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Recipient Name
+                    // Recipient Name with Verified Badge
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        'To $_selectedName',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'To $_selectedName',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -201,6 +234,48 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Add a note TextField
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _noteController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          hintText: 'Add a note (optional)',
+                          hintStyle: TextStyle(color: Colors.white60),
+                          border: InputBorder.none,
+                          icon: Icon(
+                            Icons.note_alt_outlined,
+                            color: Colors.white60,
+                          ),
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Preset Amount Buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildPresetAmountChip('₹100', 100),
+                          const SizedBox(width: 12),
+                          _buildPresetAmountChip('₹500', 500),
+                          const SizedBox(width: 12),
+                          _buildPresetAmountChip('₹1000', 1000),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -407,6 +482,23 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
           );
         }).toList(),
       ),
+    );
+  }
+
+  Widget _buildPresetAmountChip(String label, int amount) {
+    return ActionChip(
+      label: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
+      onPressed: () => _setPresetAmount(amount),
+      backgroundColor: Colors.white.withValues(alpha: 0.2),
+      side: const BorderSide(color: Colors.white54, width: 1),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 }

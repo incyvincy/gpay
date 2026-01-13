@@ -3,6 +3,7 @@ import 'login_screen.dart';
 import 'signup_screen.dart';
 import 'gpay_page.dart';
 import 'qr_scanner_page.dart';
+import 'transaction_detail_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
         '/gpay': (context) => const GpayPage(),
         '/scanner': (context) => const QRScannerPage(),
+        '/transaction_detail': (context) => const TransactionDetailScreen(),
       },
     );
   }
