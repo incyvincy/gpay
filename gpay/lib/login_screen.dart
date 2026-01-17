@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'gpay_page.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    // Use 10.0.2.2 for Android Emulator, or your PC IP for physical device
     const String url = 'http://192.168.31.97:3000/login';
 
     try {
@@ -51,14 +51,16 @@ class _LoginScreenState extends State<LoginScreen> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['success'] == true) {
-        // Success!
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Welcome back, ${data['user']['name']}!')),
         );
-        // Navigate to GPay Home Screen
-        Navigator.pushReplacementNamed(context, '/gpay');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GpayPage(userData: data['user']),
+          ),
+        );
       } else {
-        // Failed (Wrong password or user not found)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(data['message'] ?? 'Invalid credentials'),
@@ -69,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Connection Error: Is the backend running?'),
             backgroundColor: Colors.red,
           ),

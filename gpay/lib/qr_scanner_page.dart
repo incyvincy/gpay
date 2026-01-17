@@ -4,7 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'money_transfer_page.dart';
 
 class QRScannerPage extends StatefulWidget {
-  const QRScannerPage({super.key});
+  final Map<String, dynamic> userData;
+
+  const QRScannerPage({super.key, required this.userData});
 
   @override
   State<QRScannerPage> createState() => _QRScannerPageState();
@@ -69,7 +71,8 @@ class _QRScannerPageState extends State<QRScannerPage> {
       Navigator.of(context)
           .push(
             MaterialPageRoute(
-              builder: (context) => MoneyTransferPage(upiId: raw),
+              builder: (context) =>
+                  MoneyTransferPage(upiId: raw, userData: widget.userData),
             ),
           )
           .then((_) {

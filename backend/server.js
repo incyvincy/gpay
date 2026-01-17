@@ -54,18 +54,44 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// 2. Transaction Route (Saves payment)
+// 2. Transaction Route (Deducts Balance + Saves Record)
 app.post('/pay', async (req, res) => {
-  const { amount, receiver_name, upi_id } = req.body;
+  const { amount, receiver_name, upi_id, sender_email } = req.body;
+  
+  const client = await pool.connect();
+  
   try {
-    // Save to DB
-    await pool.query(
-      "INSERT INTO transactions (amount, receiver_name, upi_id, status) VALUES ($1, $2, $3, 'Success')",
-      [amount, receiver_name, upi_id]
+    await client.query('BEGIN'); // Start Transaction
+
+    // Step A: Check if user has enough balance
+    const userRes = await client.query("SELECT balance FROM users WHERE email = $1", [sender_email]);
+    if (userRes.rows.length === 0) {
+        throw new Error("User not found");
+    }
+    const currentBalance = parseFloat(userRes.rows[0].balance);
+    const payAmount = parseFloat(amount);
+
+    if (currentBalance < payAmount) {
+        throw new Error("Insufficient Balance");
+    }
+
+    // Step B: Deduct Balance
+    await client.query("UPDATE users SET balance = balance - $1 WHERE email = $2", [payAmount, sender_email]);
+
+    // Step C: Save Transaction
+    await client.query(
+      "INSERT INTO transactions (amount, receiver_name, upi_id, sender_email, status) VALUES ($1, $2, $3, $4, 'Success')",
+      [payAmount, receiver_name, upi_id, sender_email]
     );
-    res.json({ success: true });
+
+    await client.query('COMMIT'); // Save Changes
+    res.json({ success: true, message: "Payment Successful" });
+
   } catch (err) {
+    await client.query('ROLLBACK'); // Undo if error
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 

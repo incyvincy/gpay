@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
-import 'gpay_page.dart';
-import 'qr_scanner_page.dart';
 import 'transaction_detail_screen.dart';
 
 void main() {
@@ -40,8 +38,6 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
         '/home': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
-        '/gpay': (context) => const GpayPage(),
-        '/scanner': (context) => const QRScannerPage(),
         '/transaction_detail': (context) => const TransactionDetailScreen(),
       },
     );
