@@ -148,13 +148,6 @@ class _GpayPageState extends State<GpayPage> {
                       ),
                     );
                   }),
-                  _buildActionButton(Icons.payment, 'Bank Trf', () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Bank Transfer Feature Coming Soon"),
-                      ),
-                    );
-                  }),
                 ],
               ),
 
@@ -257,6 +250,29 @@ class _GpayPageState extends State<GpayPage> {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 30),
+
+              // 4. People Section (NEW!)
+              const Text(
+                "People",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 90,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildPersonAvatar("Alice", Colors.pinkAccent),
+                    _buildPersonAvatar("Bob", Colors.orangeAccent),
+                    _buildPersonAvatar("Carol", Colors.greenAccent),
+                    _buildPersonAvatar("David", Colors.purpleAccent),
+                    _buildPersonAvatar("Emma", Colors.tealAccent),
+                    _buildPersonAvatar("Frank", Colors.blueAccent),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -269,13 +285,49 @@ class _GpayPageState extends State<GpayPage> {
       onTap: onTap,
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.blueAccent,
-            child: Icon(icon, color: Colors.white, size: 28),
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueAccent.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 28,
+              backgroundColor: Colors.blueAccent,
+              child: Icon(icon, color: Colors.white, size: 28),
+            ),
           ),
           const SizedBox(height: 8),
           Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPersonAvatar(String name, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16.0),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: color,
+            child: Text(
+              name[0],
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(name, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
