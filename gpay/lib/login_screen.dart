@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'services/api_constants.dart';
 import 'gpay_page.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -37,11 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    const String url = 'http://192.168.31.97:3000/login';
-
     try {
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse(ApiConstants.login),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );

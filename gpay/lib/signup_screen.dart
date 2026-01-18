@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'services/api_constants.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -52,11 +53,10 @@ class _SignupScreenState extends State<SignupScreen> {
     // 2. Send Data to Backend
     // Use http://10.0.2.2:3000/signup for Android Emulator
     // Use http://YOUR_PC_IP:3000/signup for Real Device
-    const String url = 'http://192.168.31.97:3000/signup';
 
     try {
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse(ApiConstants.signup),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );

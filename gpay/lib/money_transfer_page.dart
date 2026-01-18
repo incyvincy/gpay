@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'services/api_constants.dart';
+import 'services/auth_service.dart';
 import 'gpay_page.dart';
 
 class MoneyTransferPage extends StatefulWidget {
@@ -106,15 +108,30 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
       return;
     }
 
+    // --- NEW: AUTHENTICATION CHECK ---
+    bool isAuthenticated = await AuthService.authenticateUser(
+      context,
+      widget.userData['email'],
+    );
+
+    if (!isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Authentication Failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // ---------------------------------
+
     setState(() {
       _isProcessing = true;
     });
 
-    const String url = 'http://192.168.31.97:3000/pay';
-
     try {
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse(ApiConstants.pay),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'amount': _amount,

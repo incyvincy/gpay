@@ -54,41 +54,52 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// 2. Transaction Route (Deducts Balance + Saves Record)
+// 2. Transaction Route (Updated to track Receiver Email)
 app.post('/pay', async (req, res) => {
   const { amount, receiver_name, upi_id, sender_email } = req.body;
-  
   const client = await pool.connect();
-  
-  try {
-    await client.query('BEGIN'); // Start Transaction
 
-    // Step A: Check if user has enough balance
+  try {
+    await client.query('BEGIN');
+
+    // Check Balance
     const userRes = await client.query("SELECT balance FROM users WHERE email = $1", [sender_email]);
-    if (userRes.rows.length === 0) {
-        throw new Error("User not found");
-    }
+    if (userRes.rows.length === 0) throw new Error("User not found");
+    
     const currentBalance = parseFloat(userRes.rows[0].balance);
     const payAmount = parseFloat(amount);
 
-    if (currentBalance < payAmount) {
-        throw new Error("Insufficient Balance");
+    // Security Check: Block negative or zero amounts
+    if (payAmount <= 0) {
+        throw new Error("Invalid amount. Cannot pay negative or zero.");
     }
 
-    // Step B: Deduct Balance
+    if (currentBalance < payAmount) throw new Error("Insufficient Balance");
+
+    // Deduct Balance
     await client.query("UPDATE users SET balance = balance - $1 WHERE email = $2", [payAmount, sender_email]);
 
-    // Step C: Save Transaction
+    // Check if the Receiver exists in our DB (to show in their history later)
+    // We assume the 'upi_id' might be their email for this demo
+    let receiverEmail = null;
+    const receiverCheck = await client.query("SELECT email FROM users WHERE email = $1", [upi_id]);
+    if (receiverCheck.rows.length > 0) {
+        receiverEmail = receiverCheck.rows[0].email;
+        // Optional: Add money to receiver if they exist
+        await client.query("UPDATE users SET balance = balance + $1 WHERE email = $2", [payAmount, receiverEmail]);
+    }
+
+    // Save Transaction
     await client.query(
-      "INSERT INTO transactions (amount, receiver_name, upi_id, sender_email, status) VALUES ($1, $2, $3, $4, 'Success')",
-      [payAmount, receiver_name, upi_id, sender_email]
+      "INSERT INTO transactions (amount, receiver_name, upi_id, sender_email, receiver_email, status, date) VALUES ($1, $2, $3, $4, $5, 'Success', NOW())",
+      [payAmount, receiver_name, upi_id, sender_email, receiverEmail]
     );
 
-    await client.query('COMMIT'); // Save Changes
+    await client.query('COMMIT');
     res.json({ success: true, message: "Payment Successful" });
 
   } catch (err) {
-    await client.query('ROLLBACK'); // Undo if error
+    await client.query('ROLLBACK');
     res.status(500).json({ error: err.message });
   } finally {
     client.release();
@@ -123,6 +134,22 @@ app.post('/signup', async (req, res) => {
     }
     res.status(500).json({ error: err.message });
   }
+});
+
+// 4. History Route (New)
+app.post('/history', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const result = await pool.query(
+            `SELECT * FROM transactions 
+             WHERE sender_email = $1 OR receiver_email = $1 
+             ORDER BY id DESC`,
+            [email]
+        );
+        res.json({ success: true, transactions: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Start Server
