@@ -190,7 +190,7 @@ class _GpayPageState extends State<GpayPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "FamX Card",
+                                    "QuickX Card",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,

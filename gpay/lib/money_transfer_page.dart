@@ -202,12 +202,23 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Text(
-                      'Paying $_selectedName',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Paying $_selectedName',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.verified,
+                          color: Colors.blue,
+                          size: 18,
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Padding(
@@ -224,17 +235,38 @@ class _MoneyTransferPageState extends State<MoneyTransferPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.blueAccent.withOpacity(0.12),
-                      child: Text(
-                        _selectedAvatar,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blueAccent.withOpacity(0.12),
+                          child: Text(
+                            _selectedAvatar,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.account_balance,
+                              size: 16,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 30),
                     Row(
