@@ -50,7 +50,7 @@ class _GpayPageState extends State<GpayPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFEAF6FF),
       appBar: AppBar(
-        title: const Text('GPay'),
+        title: const Text('QuickPay'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         actions: [
