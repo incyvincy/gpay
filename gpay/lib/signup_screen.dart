@@ -50,10 +50,6 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = true;
     });
 
-    // 2. Send Data to Backend
-    // Use http://10.0.2.2:3000/signup for Android Emulator
-    // Use http://YOUR_PC_IP:3000/signup for Real Device
-
     try {
       final response = await http.post(
         Uri.parse(ApiConstants.signup),
@@ -70,7 +66,7 @@ class _SignupScreenState extends State<SignupScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account Created Successfully!')),
         );
-        Navigator.pushReplacementNamed(context, '/gpay');
+        Navigator.pushReplacementNamed(context, '/login');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

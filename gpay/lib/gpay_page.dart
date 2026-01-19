@@ -153,9 +153,9 @@ class _GpayPageState extends State<GpayPage> {
 
               const SizedBox(height: 40),
 
-              // 3. My Cards Section
+              // 3. Your Card Section
               const Text(
-                "My Cards",
+                "Your Card",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),

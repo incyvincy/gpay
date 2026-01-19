@@ -1,33 +1,15 @@
 // lib/auth_service.dart
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'api_constants.dart';
 
 class AuthService {
-  static final LocalAuthentication auth = LocalAuthentication();
-
   static Future<bool> authenticateUser(
     BuildContext context,
     String email,
   ) async {
-    // 1. Try Biometrics (Fingerprint/Face)
-    bool canCheckBiometrics = await auth.canCheckBiometrics;
-    if (canCheckBiometrics) {
-      try {
-        final bool didAuthenticate = await auth.authenticate(
-          localizedReason: 'Please authenticate to proceed',
-          options: const AuthenticationOptions(biometricOnly: false),
-        );
-        if (didAuthenticate) return true;
-      } catch (e) {
-        print("Biometric error: $e");
-        // Fallback to password on error
-      }
-    }
-
-    // 2. Fallback: Password Popup
+    // Authenticate using password
     return await _showPasswordDialog(context, email);
   }
 
