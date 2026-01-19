@@ -67,12 +67,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           matchesCategory = txn['receiver_email'] == myEmail;
         } else if (_selectedFilter == 'Sent') {
           matchesCategory = txn['sender_email'] == myEmail;
-        } else if (_selectedFilter == 'Pending') {
-          matchesCategory = txn['status']?.toLowerCase() == 'pending';
-        } else if (_selectedFilter == 'Refunds') {
-          matchesCategory = txn['status']?.toLowerCase() == 'refund';
-        } else if (_selectedFilter == 'UPI Lite') {
-          matchesCategory = txn['type']?.toLowerCase() == 'upi_lite';
         }
 
         // Filter by search query
@@ -142,9 +136,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       _buildFilterChip('All'),
                       _buildFilterChip('Received'),
                       _buildFilterChip('Sent'),
-                      _buildFilterChip('Pending'),
-                      _buildFilterChip('Refunds'),
-                      _buildFilterChip('UPI Lite'),
                     ],
                   ),
                 ),
@@ -211,6 +202,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     fontSize: 16,
                                   ),
                                 ),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/transaction_detail',
+                                    arguments: {
+                                      'id': (txn['id'] ?? 'N/A').toString(),
+                                      'amount': txn['amount'].toString(),
+                                      'name': txn['receiver_name'] ?? 'Unknown',
+                                      'date': txn['date']?.toString() ?? 'N/A',
+                                      'status': isSent ? 'Sent' : 'Received',
+                                    },
+                                  );
+                                },
                               ),
                             );
                           },
